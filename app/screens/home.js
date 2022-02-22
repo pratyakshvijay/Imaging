@@ -55,43 +55,46 @@ const Home = ({ navigation }) => {
     setPickerType(pickerType);
   };
   const addCategory = async () => {
-    let check = false;
-    for (let i = 0; i < dataSource.length; i++) {
-      if (category != "") {
-        if (dataSource[i].title == category) {
-          alert("Category name can not be same ");
+    try {
+      let check = false;
+      for (let i = 0; i < dataSource.length; i++) {
+        if (category != "") {
+          if (dataSource[i].title == category) {
+            alert("Category name can not be same ");
+            check = true;
+            break;
+          }
+        } else {
+          if (pickerType == "library") {
+            pickImage("exist");
+          } else if (pickerType == "camera") {
+            clickImage("exist");
+          }
           check = true;
           break;
         }
-      } else {
-        if (pickerType == "library") {
-          pickImage("exist");
-        } else if (pickerType == "camera") {
-          clickImage("exist");
-        }
-        check = true;
-        break;
       }
-    }
 
-    if (check == false) {
-      let itemToPush = { id: category, uri: [], title: category };
-      let items = await AsyncStorage.getItem("ImageCateArr");
-      let parsedObject = JSON.parse(items);
-      let tempArr = parsedObject;
-      tempArr.push(itemToPush);
-      await AsyncStorage.setItem("ImageCateArr", JSON.stringify(tempArr));
-      setDataSource([...dataSource, itemToPush]);
-      // setDataSource((categoriesArr) => [
-      //   ...categoriesArr,
-      //   { id: category, title: category },
-      // ]);
-      setModalVisible(!modalVisible);
-      if (pickerType == "library") {
-        pickImage("new");
-      } else if (pickerType == "camera") {
-        clickImage("new");
+      if (check == false) {
+        let itemToPush = { id: category, uri: [], title: category };
+        let items = await AsyncStorage.getItem("ImageCateArr");
+        let parsedObject = JSON.parse(items);
+        let tempArr = parsedObject;
+        tempArr.push(itemToPush);
+        await AsyncStorage.setItem("ImageCateArr", JSON.stringify(tempArr));
+        setDataSource([...dataSource, itemToPush]);
+        // setDataSource((categoriesArr) => [
+        //   ...categoriesArr,
+        //   { id: category, title: category },
+        // ]);
+        if (pickerType == "library") {
+          pickImage("new");
+        } else if (pickerType == "camera") {
+          clickImage("new");
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -161,30 +164,38 @@ const Home = ({ navigation }) => {
     }
   };
   const pickImage = async (existOrNew) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    if (!result.cancelled) {
-      saveImageUrlToCategory(existOrNew, result.uri);
-      setImage(result.uri);
+      if (!result.cancelled) {
+        saveImageUrlToCategory(existOrNew, result.uri);
+        setImage(result.uri);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const clickImage = async (existOrNew) => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    if (!result.cancelled) {
-      saveImageUrlToCategory(existOrNew, result.uri);
-      setImage(result.uri);
+      if (!result.cancelled) {
+        saveImageUrlToCategory(existOrNew, result.uri);
+        setImage(result.uri);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
